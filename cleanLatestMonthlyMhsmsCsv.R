@@ -31,4 +31,5 @@ cleaned_csv <- function(input_csv){
   return(c)
 } 
 
-glimpse(cleaned_csv)
+clean <- cleaned_csv(csv)
+glimpse(clean)
