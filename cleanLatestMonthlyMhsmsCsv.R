@@ -32,8 +32,6 @@ landing_page <- 'https://digital.nhs.uk/data-and-information/publications/statis
 latest_files_link <- get_url(landing_page, '.cta__button')
 web_file <- get_url(latest_files_link, '[title*="MHSDS Data File"]')
 csv <- read_csv(web_file)
-
- 
-
 clean <- cleaned_csv(csv)
+
 glimpse(clean)
