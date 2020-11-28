@@ -23,8 +23,8 @@ cleaned_csv <- function(input_csv){
   c$REPORTING_PERIOD_END <- as.Date(c$REPORTING_PERIOD_END,'%d/%m/%Y')
   c$MEASURE_VALUE <- as.integer(c$MEASURE_VALUE)
   return(c)
-}
-
+}  
+  
 
 landing_page <- 'https://digital.nhs.uk/data-and-information/publications/statistical/mental-health-services-monthly-statistics'
 
