@@ -8,8 +8,6 @@ if (!require(rvest)) install.packages("rvest"); library(rvest)
 if (!require(formatR)) install.packages("formatR"); library(formatR)
 detach("package:dplyr"); library(dplyr) #ensure dplyr is loaded last in case i forget to prefix the filter function
 
-landing_page <- 'https://digital.nhs.uk/data-and-information/publications/statistical/mental-health-services-monthly-statistics'
-
 get_url <- function (input_url, css_selector){
   link <- xml2::read_html(input_url)%>%
     html_node(css_selector)%>%
@@ -17,10 +15,6 @@ get_url <- function (input_url, css_selector){
   return(link)
 }
 
-# Manually disable DirectAccess first
-latest_files_link <- get_url(landing_page, '.cta__button')
-web_file <- get_url(latest_files_link, '[title*="MHSDS Data File"]')
-csv <- read_csv(web_file)
 
 ### clean dataframe function.....
 cleaned_csv <- function(input_csv){
@@ -29,7 +23,17 @@ cleaned_csv <- function(input_csv){
   c$REPORTING_PERIOD_END <- as.Date(c$REPORTING_PERIOD_END,'%d/%m/%Y')
   c$MEASURE_VALUE <- as.integer(c$MEASURE_VALUE)
   return(c)
-} 
+}
+
+
+landing_page <- 'https://digital.nhs.uk/data-and-information/publications/statistical/mental-health-services-monthly-statistics'
+
+# Manually disable DirectAccess first
+latest_files_link <- get_url(landing_page, '.cta__button')
+web_file <- get_url(latest_files_link, '[title*="MHSDS Data File"]')
+csv <- read_csv(web_file)
+
+ 
 
 clean <- cleaned_csv(csv)
 glimpse(clean)
