@@ -18,7 +18,7 @@ get_url <- function (input_url, css_selector){
 
 ### clean dataframe function.....
 cleaned_csv <- function(input_csv){
-  c <- filter(input_csv,!is.na(input_csv$MEASURE_VALUE) & input_csv$MEASURE_VALUE != "*") 
+  c <- input_csv %>% filter(!is.na(MEASURE_VALUE) & MEASURE_VALUE != "*") 
   c$REPORTING_PERIOD_START <- as.Date(c$REPORTING_PERIOD_START,'%d/%m/%Y')
   c$REPORTING_PERIOD_END <- as.Date(c$REPORTING_PERIOD_END,'%d/%m/%Y')
   c$MEASURE_VALUE <- as.integer(c$MEASURE_VALUE)
