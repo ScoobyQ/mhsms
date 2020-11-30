@@ -18,13 +18,25 @@ get_url <- function (input_url, css_selector){
 
 ### clean dataframe function.....
 cleaned_csv <- function(input_csv){
-  c <- input_csv %>% filter(!is.na(MEASURE_VALUE) & MEASURE_VALUE != "*") 
+  c <- filter(input_csv, BREAKDOWN %in% keep_breakdowns, MEASURE_VALUE!='*', !is.na(MEASURE_VALUE)) 
   c$REPORTING_PERIOD_START <- as.Date(c$REPORTING_PERIOD_START,'%d/%m/%Y')
   c$REPORTING_PERIOD_END <- as.Date(c$REPORTING_PERIOD_END,'%d/%m/%Y')
   c$MEASURE_VALUE <- as.integer(c$MEASURE_VALUE)
+  c$BREAKDOWN <- map(c$BREAKDOWN, remap_breakdown)
   return(c)
 }  
   
+remap_breakdown <- function (input_breakdown){
+  if(grepl('CCG', input_breakdown, ignore.case=T)){'CCG - GP Practice or Residence'}
+  else if(grepl('Provider', input_breakdown, ignore.case=T)){'Provider'}
+  else if(grepl('England', input_breakdown, ignore.case=T)){'England'}
+  else{input_breakdown}
+}
+
+
+keep_breakdowns <- c('CCG - GP Practice or Residence', 'CCG - GP Practice or Residence; ConsMediumUsed', 
+                     'England', 'England; ConsMediumUsed', 'Provider', 'Provider; ConsMediumUsed', 
+                     'Region', 'STP')
 
 landing_page <- 'https://digital.nhs.uk/data-and-information/publications/statistical/mental-health-services-monthly-statistics'
 
@@ -36,5 +48,3 @@ clean <- cleaned_csv(csv)
 
 glimpse(clean)
 
-
-#test_line
