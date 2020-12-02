@@ -50,7 +50,7 @@ landing_page <- "https://digital.nhs.uk/data-and-information/publications/statis
 files_df <- all_file_urls(landing_page, '[data-uipath]:not([data-uipath*=upcoming]) .cta__button') #need to exclude upcoming url!
 
 #2020 files only
-files_df <- filter(files_df, grepl('*2020', links))
+files_df <- filter(files_df, grepl('*2020|*2019', links))
 
 plan(multiprocess)
 
@@ -59,6 +59,6 @@ combined_csvs <- future_map_dfr(.x = files_df$links,
                                 .f = ~ cleaned_csv2(read_csv(get_url2(.x, '[title*="MHSDS Data File"]')))
                                 , seed=TRUE)
 
-
-
+# unique(subset(combined_csvs, REPORTING_PERIOD_END == "2020-02-29")$REPORTING_PERIOD_START)
+#  unique(subset(combined_csvs, REPORTING_PERIOD_START == "2019-12-01")$REPORTING_PERIOD_END)
 
