@@ -22,7 +22,7 @@ get_url2 <- function (input_url, css_selector){
     html_attr('href') %>% url_absolute(input_url)
   return(link)
 }
-
+dd
 cleaned_csv2 <- function(input_csv){
   c <- filter(input_csv, BREAKDOWN %in% keep_breakdowns, MEASURE_VALUE!='*', !is.na(MEASURE_VALUE)) 
   c$REPORTING_PERIOD_START <- as.Date(c$REPORTING_PERIOD_START,'%d/%m/%Y')
@@ -33,7 +33,17 @@ cleaned_csv2 <- function(input_csv){
   return(c)
 }  
 
+remap_breakdown <- function (input_breakdown){
+  if(grepl('CCG', input_breakdown, ignore.case=T)){'CCG - GP Practice or Residence'}
+  else if(grepl('Provider', input_breakdown, ignore.case=T)){'Provider'}
+  else if(grepl('England', input_breakdown, ignore.case=T)){'England'}
+  else{input_breakdown}
+}
 
+
+keep_breakdowns <- c('CCG - GP Practice or Residence', 'CCG - GP Practice or Residence; ConsMediumUsed', 
+                     'England', 'England; ConsMediumUsed', 'Provider', 'Provider; ConsMediumUsed', 
+                     'Region', 'STP')
 
 landing_page <- "https://digital.nhs.uk/data-and-information/publications/statistical/mental-health-services-monthly-statistics"
 
@@ -46,7 +56,8 @@ plan(multiprocess)
 
 
 combined_csvs <- future_map_dfr(.x = files_df$links, 
-                                .f = ~ cleaned_csv2(read_csv(get_url2(.x, '[title*="MHSDS Data File"]'))), seed=TRUE)
+                                .f = ~ cleaned_csv2(read_csv(get_url2(.x, '[title*="MHSDS Data File"]')))
+                                , seed=TRUE)
 
 
 
