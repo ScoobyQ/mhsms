@@ -23,6 +23,17 @@ get_url2 <- function (input_url, css_selector){
   return(link)
 }
 
+cleaned_csv2 <- function(input_csv){
+  c <- filter(input_csv, BREAKDOWN %in% keep_breakdowns, MEASURE_VALUE!='*', !is.na(MEASURE_VALUE)) 
+  c$REPORTING_PERIOD_START <- as.Date(c$REPORTING_PERIOD_START,'%d/%m/%Y')
+  c$REPORTING_PERIOD_END <- as.Date(c$REPORTING_PERIOD_END,'%d/%m/%Y')
+  c$MEASURE_VALUE <- as.integer(c$MEASURE_VALUE)
+  c$SECONDARY_LEVEL <- as.character(c$SECONDARY_LEVEL)
+  c$BREAKDOWN <- map(c$BREAKDOWN, remap_breakdown)
+  return(c)
+}  
+
+
 
 landing_page <- "https://digital.nhs.uk/data-and-information/publications/statistical/mental-health-services-monthly-statistics"
 
@@ -34,5 +45,9 @@ files_df <- filter(files_df, grepl('*2020', links))
 plan(multiprocess)
 
 
-combined_csvs <- future_map_dfr(.x = files_df$links, #%>%set_names(~ letters[seq_along(.)])
-               .f = ~ cleaned_csv(read_csv(get_url2(.x, '[title*="MHSDS Data File"]'))), seed=TRUE)
+combined_csvs <- future_map_dfr(.x = files_df$links, 
+                                .f = ~ cleaned_csv2(read_csv(get_url2(.x, '[title*="MHSDS Data File"]'))), seed=TRUE)
+
+
+
+
