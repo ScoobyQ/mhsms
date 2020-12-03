@@ -15,7 +15,7 @@ all_file_urls <- function (input_url, css_selector){
 }
 
 
-get_url2 <- function (input_url, css_selector){
+get_url <- function (input_url, css_selector){
   link <- xml2::read_html(input_url)%>%
     html_node(css_selector)%>%
     html_attr('href') %>% url_absolute(input_url)
@@ -23,7 +23,7 @@ get_url2 <- function (input_url, css_selector){
 }
 
 
-cleaned_csv2 <- function(input_csv){
+cleaned_csv <- function(input_csv){
   c <- filter(input_csv, BREAKDOWN %in% keep_breakdowns, MEASURE_VALUE!='*', !is.na(MEASURE_VALUE)) 
   c$REPORTING_PERIOD_START <- as.Date(ifelse(grepl("/", c$REPORTING_PERIOD_START),  
                                              as.Date(c$REPORTING_PERIOD_START, '%d/%m/%Y'), 
@@ -87,8 +87,8 @@ temp_df <- data.frame(REPORTING_PERIOD_START= NA_character_,
 
 #tryCatch idea from @FJCC https://community.rstudio.com/t/read-csv-readr-output-empty-dataframe-with-expected-headers-if-actual-headers-dont-all-match-definition/89790
 combined_csvs <- future_map_dfr(.x = files_df$links, 
-                                .f = ~ cleaned_csv2(
-                                  tryCatch(read_csv(get_url2(.x, '[title*="MHSDS Data File"],[title*="MHSDS Monthly Data File"]'), col_types = colTypes), 
+                                .f = ~ cleaned_csv(
+                                  tryCatch(read_csv(get_url(.x, '[title*="MHSDS Data File"],[title*="MHSDS Monthly Data File"]'), col_types = colTypes), 
                                            warning=function(e) temp_df)   
                                 ), seed=TRUE)
 
